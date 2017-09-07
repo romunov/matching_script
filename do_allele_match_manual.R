@@ -8,6 +8,7 @@ xy <- read.table("./data/testni_podatki.txt", header = TRUE, sep = ";")
 xy <- read.table("./data/sample_data_with_id.csv", header = TRUE, sep = ";")
 # podvojena imena vzorcev, vrže error
 xy <- read.table("./data/518ac7b0a6ab2ead5323b6b65c16b480.csv", header = TRUE, sep = ";")
+xy <- read.table("./data/sample_id.csv", header = TRUE, sep = ";", check.names = FALSE)
 head(xy)
 xy
 
@@ -62,9 +63,9 @@ cat("Performing matching.", file = opt$verbose)
 
 message("Performing matching...")
 result <- amUnique(amDatasetFocal = d.xy, 
-                   alleleMismatch = opt$alleleMismatch, 
-                   matchThreshold = opt$matchThreshold,
-                   cutHeight = opt$cutHeight
+                   alleleMismatch = 1 
+                   # matchThreshold = opt$matchThreshold,
+                   # cutHeight = opt$cutHeight
 )
 
 cat("Matching done.", file = opt$verbose)
@@ -78,16 +79,16 @@ if (grepl("\\.csv$", opt$output)) {
   
   cat("Writing result to CSV.", file = opt$verbose)
   
-  amCSV.amUnique(x = result, csvFile = opt$output)
+  amCSV.amUnique(x = result, csvFile = "tmpfile.csv")
   
   # Reread the data and reflow it into a long format, subset only 
   # relevant columns and resave it
-  rein <- read.table(opt$output, header = TRUE, sep = ",")
+  rein <- read.table("tmpfile.csv", header = TRUE, sep = ",", check.names = FALSE)
   rein <- gather(rein, key = markerName, value = value, -uniqueGroup, -rowType, -uniqueIndex,
                  -matchIndex, -nUniqueGroup, -alleleMismatch, -matchThreshold, -cutHeight,
                  -Psib, -score)[, c("uniqueGroup", "rowType", "uniqueIndex", "matchIndex", "Psib",
                                     "markerName", "value")]
-  write.table(rein, file = opt$output, quote = FALSE, sep = ",",
+  write.table(rein, file = "rez.csv", quote = FALSE, sep = ",",
               col.names = TRUE, row.names = FALSE)
   
   cat("Done writing CSV file.")
@@ -95,5 +96,4 @@ if (grepl("\\.csv$", opt$output)) {
   cat("Writing data to HTML.", file = opt$verbose)
   amHTML.amUnique(x = result, htmlFile = opt$output)
   cat("Done writing data to HTML.", file = opt$verbose)
-}
 }

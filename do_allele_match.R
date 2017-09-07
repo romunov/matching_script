@@ -49,7 +49,7 @@ if (is.null(opt$input)) {
 # Implementing reading from a csv with decimal delimiter and tab as separator. 
 message("Importing dataset...")
 cat("Importing dataset.\n", file = opt$verbose) # create a new debugging file, overwrite any previous
-xy <- read.table(input, header = TRUE, sep = ";")
+xy <- read.table(input, header = TRUE, sep = ";", check.names = FALSE)
 cat("[OK] Successfully imported dataset.\n", file = opt$verbose, append = TRUE)
 
 cat("Reshaping data.\n", file = opt$verbose, append = TRUE)
@@ -136,7 +136,7 @@ if (opt$profile) {
     
     # Reread the data and reflow it into a long format, subset only 
     # relevant columns and resave it
-    rein <- read.table(opt$output, header = TRUE, sep = ",")
+    rein <- read.table(opt$output, header = TRUE, sep = ",", check.names = FALSE)
     rein <- gather(rein, key = markerName, value = value, -uniqueGroup, -rowType, -uniqueIndex,
                    -matchIndex, -nUniqueGroup, -alleleMismatch, -matchThreshold, -cutHeight,
                    -Psib, -score, -metaData)[, c("metaData", "uniqueGroup", "rowType", "uniqueIndex", "matchIndex", "Psib",
