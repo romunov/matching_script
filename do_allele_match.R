@@ -155,7 +155,7 @@ if (opt$profile) {
 }
 
 cat("\n", file = opt$verbose, append = TRUE)
-cat("Analysis performed using the following tools (https://github.com/romunov/zvau) \n\n",
+cat("Analysis performed using the following tools (https://github.com/romunov/matching_script) \n\n",
     file = opt$verbose, append = TRUE)
 sink(file = opt$verbose, append = TRUE, type = "output")
 
