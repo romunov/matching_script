@@ -35,6 +35,11 @@ option_list <- list(
 
 opt <- parse_args(OptionParser(option_list = option_list))
 
+# Find script name to write to debugger.
+get.file <- commandArgs(trailingOnly = FALSE) # extract all arguments
+get.file <- get.file[grepl("--file", get.file)] # finds --file
+script.name <- gsub("^(--file=)(.*$)", "\\2", get.file)
+
 # Load packages
 library(allelematch)
 
@@ -53,14 +58,14 @@ xy <- read.table(input, header = TRUE, sep = ";", check.names = FALSE)
 cat("[OK] Successfully imported dataset.\n", file = opt$verbose, append = TRUE)
 
 cat("Reshaping data.\n", file = opt$verbose, append = TRUE)
-xy <- reshape(xy, timevar = "marker", idvar = c("sample", "id"), direction = "wide")
+xy <- reshape(xy, timevar = "marker", idvar = "sample", direction = "wide")
 names(xy) <- gsub("measured\\.", replacement = "", x = names(xy))
 cat("[OK] Done reshaping data.\n", file = opt$verbose, append = TRUE)
 
 # Convert the imported dataset into a proper structure for matching
 message("Creating dataset for further processing...")
 cat("Preparing dataset for analysis.\n", file = opt$verbose, append = TRUE)
-d.xy <- amDataset(xy, missingCode = NA, indexColumn = "sample", metaDataColumn = "id")
+d.xy <- amDataset(xy, missingCode = NA, indexColumn = "sample")
 cat("[OK] Dataset ready for analysis.\n", file = opt$verbose, append = TRUE)
 
 # Do profiling. Figure is saved to working directory.
@@ -139,9 +144,8 @@ if (opt$profile) {
     rein <- read.table(opt$output, header = TRUE, sep = ",", check.names = FALSE)
     rein <- gather(rein, key = markerName, value = value, -uniqueGroup, -rowType, -uniqueIndex,
                    -matchIndex, -nUniqueGroup, -alleleMismatch, -matchThreshold, -cutHeight,
-                   -Psib, -score, -metaData)[, c("metaData", "uniqueGroup", "rowType", "uniqueIndex", "matchIndex", "Psib",
+                   -Psib, -score)[, c("uniqueGroup", "rowType", "uniqueIndex", "matchIndex", "Psib",
                                       "markerName", "value")]
-    names(rein)[grepl("metaData", names(rein))] <- "id" # rename metaData to id
     
     write.table(rein, file = opt$output, quote = FALSE, sep = ",",
                 col.names = TRUE, row.names = FALSE)
@@ -157,6 +161,7 @@ if (opt$profile) {
 cat("\n", file = opt$verbose, append = TRUE)
 cat("Analysis performed using the following tools (https://github.com/romunov/matching_script) \n\n",
     file = opt$verbose, append = TRUE)
+cat(sprintf("File used: %s \n\n", script.name), file = opt$verbose, append = TRUE)
 sink(file = opt$verbose, append = TRUE, type = "output")
 
 sessionInfo()
