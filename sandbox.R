@@ -1,9 +1,5 @@
-devtools::load_all(".")
-roxygen2::roxygenize()
-
 xy <- read.table("./sandbox/gis_data_sim.csv", sep = ";", header = TRUE)
 xy$id <- as.numeric(xy$sample)
-head(xy)
 write.table(xy, file = "./sandbox/test_genotipi_id.csv", sep = ";", col.names = TRUE,
             row.names = FALSE, quote = FALSE)
 
@@ -44,4 +40,9 @@ amCSV.amUnique(x = rs, csvFile = "result_dinalpbear.csv")
 
 # Calibration table
 setkey(xy, Mrkr, measured)
-out <- xy[, lapply(.SD, function(x) head(x, 1)), by = key(xy)][, .(Mrkr, measured)]
+out <- xy[, lapply(.SD, function(x) head(x, 1)), by = key(xy)]
+out <- out[, .(Mrkr, measured, Sample)]
+out <- out[!is.na(measured), ]
+out[, sequence := ""]
+out[, comment := ""]
+fwrite(out, file = "./data/calibration_table_dab_testdata.csv", sep = "\t")
