@@ -43,6 +43,10 @@ setkey(xy, Mrkr, measured)
 out <- xy[, lapply(.SD, function(x) head(x, 1)), by = key(xy)]
 out <- out[, .(Mrkr, measured, Sample)]
 out <- out[!is.na(measured), ]
-out[, sequence := ""]
-out[, comment := ""]
+out[, sequence := NA]
+out[, comment := NA]
+out[, calibrated := measured]
+out <- out[, .(Mrkr, measured, calibrated, sequence, comment, Sample)]
+names(out) <- c("marker", "measured", "calibrated", "sequence", "comment", "sample_id")
+out
 fwrite(out, file = "./data/calibration_table_dab_testdata.csv", sep = "\t")

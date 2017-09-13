@@ -9,10 +9,13 @@ xy <- read.table("./data/sample_data_with_id.csv", header = TRUE, sep = ";")
 # podvojena imena vzorcev, vrže error
 xy <- read.table("./data/518ac7b0a6ab2ead5323b6b65c16b480.csv", header = TRUE, sep = ";")
 xy <- read.table("./data/sample_id.csv", header = TRUE, sep = ";", check.names = FALSE)
+xy <- read.table("./data/input.csv", header = TRUE, sep = ";", check.names = FALSE)
+xy <- read.table("./data/primer.csv", header = TRUE, sep = ";", check.names = FALSE)
 head(xy)
+xy$id <- NULL
 xy
 
-xy <- reshape(xy, timevar = "marker", idvar = c("sample", "id"), direction = "wide")
+xy <- reshape(xy, timevar = "marker", idvar = c("sample"), direction = "wide")
 # xy <- reshape(xy, timevar = "marker", idvar = "sample", direction = "wide")
 names(xy) <- gsub("measured\\.", replacement = "", x = names(xy))
 
@@ -27,14 +30,14 @@ unname(apply(xy, MARGIN = 1, FUN = function(x) {
 }))
 
 # Convert the imported dataset into a proper structure for matching
-d.xy <- amDataset(xy, missingCode = NA, indexColumn = "sample", metaDataColumn = "id")
+d.xy <- amDataset(xy, missingCode = NA, indexColumn = "sample")
 # d.xy <- amDataset(xy, missingCode = NA, indexColumn = "sample")
 
 # Do profiling. Figure is saved to working directory.
 png(filename = "tmp.png",  width = 500, height = 500) # output figure size, adapt if needed
-prof <- tryCatch(amUniqueProfile(amDatasetFocal = d.xy, verbose = TRUE),
+system.time(prof <- tryCatch(amUniqueProfile(amDatasetFocal = d.xy, verbose = TRUE),
                  error = function(e) e,
-                 warning = function(w) w)
+                 warning = function(w) w))
 
 if (any(class(prof) %in% c("error", "warning"))) {
   plot.new()
