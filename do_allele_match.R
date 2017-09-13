@@ -55,6 +55,7 @@ if (is.null(opt$input)) {
 message("Importing dataset...")
 cat("Importing dataset.\n", file = opt$verbose) # create a new debugging file, overwrite any previous
 xy <- read.table(input, header = TRUE, sep = ";", check.names = FALSE)
+xy$id <- NULL # remove id
 cat("[OK] Successfully imported dataset.\n", file = opt$verbose, append = TRUE)
 
 cat("Reshaping data.\n", file = opt$verbose, append = TRUE)
